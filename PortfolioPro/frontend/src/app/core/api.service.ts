@@ -1,0 +1,2 @@
+import { Injectable } from '@angular/core'; import { HttpClient } from '@angular/common/http';
+@Injectable({providedIn:'root'}) export class ApiService{private api='http://localhost:8080/api';constructor(private http:HttpClient){} stocks(q=''){return this.http.get<any[]>(`${this.api}/stocks`,{params:{q}})} portfolio(){return this.http.get<any>(`${this.api}/portfolio`)} trade(data:any){return this.http.post<any>(`${this.api}/trades`,data)} stock(symbol:string){return this.http.get<any>(`${this.api}/stocks/${symbol}`)}}

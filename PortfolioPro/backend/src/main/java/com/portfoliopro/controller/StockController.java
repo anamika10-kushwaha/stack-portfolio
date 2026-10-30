@@ -1,0 +1,2 @@
+package com.portfoliopro.controller; import com.portfoliopro.model.Stock; import com.portfoliopro.service.StockService; import org.springframework.web.bind.annotation.*; import java.util.*;
+@RestController @RequestMapping("/api/stocks") public class StockController{private final StockService s;public StockController(StockService s){this.s=s;}@GetMapping public List<Stock> search(@RequestParam(defaultValue="")String q){return s.search(q);}@GetMapping("/{symbol}")public Stock get(@PathVariable String symbol){return s.get(symbol);}}

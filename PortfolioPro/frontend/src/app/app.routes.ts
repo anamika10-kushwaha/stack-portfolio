@@ -1,0 +1,10 @@
+import { Routes } from '@angular/router';
+import { LoginComponent } from './features/auth/login.component';
+import { RegisterComponent } from './features/auth/register.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { MarketComponent } from './features/market/market.component';
+import { PortfolioComponent } from './features/portfolio/portfolio.component';
+import { TradeComponent } from './features/trade/trade.component';
+import { AnalysisComponent } from './features/analysis/analysis.component';
+import { authGuard } from './core/auth.guard';
+export const routes:Routes=[{path:'',redirectTo:'dashboard',pathMatch:'full'},{path:'login',component:LoginComponent},{path:'register',component:RegisterComponent},{path:'dashboard',component:DashboardComponent,canActivate:[authGuard]},{path:'market',component:MarketComponent,canActivate:[authGuard]},{path:'portfolio',component:PortfolioComponent,canActivate:[authGuard]},{path:'trade',component:TradeComponent,canActivate:[authGuard]},{path:'analysis',component:AnalysisComponent,canActivate:[authGuard]}];

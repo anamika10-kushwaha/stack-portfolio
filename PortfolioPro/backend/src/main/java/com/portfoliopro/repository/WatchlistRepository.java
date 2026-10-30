@@ -1,0 +1,1 @@
+package com.portfoliopro.repository; import com.portfoliopro.model.*; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface WatchlistRepository extends JpaRepository<Watchlist,Long>{List<Watchlist> findByUser(User u); Optional<Watchlist> findByUserAndStock(User u,Stock s);}

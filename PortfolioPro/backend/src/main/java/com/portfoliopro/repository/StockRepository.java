@@ -1,0 +1,1 @@
+package com.portfoliopro.repository; import com.portfoliopro.model.Stock; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface StockRepository extends JpaRepository<Stock,Long>{Optional<Stock> findBySymbol(String symbol); List<Stock> findTop20BySymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCase(String s1,String s2);}

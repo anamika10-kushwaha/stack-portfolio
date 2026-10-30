@@ -1,0 +1,1 @@
+package com.portfoliopro.repository; import com.portfoliopro.model.*; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface TradeRepository extends JpaRepository<Trade,Long>{List<Trade> findTop20ByUserOrderByExecutedAtDesc(User user);}

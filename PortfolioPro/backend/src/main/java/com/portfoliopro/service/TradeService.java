@@ -1,0 +1,14 @@
+package com.portfoliopro.service;
+import com.portfoliopro.dto.TradeRequest; import com.portfoliopro.model.*; import com.portfoliopro.repository.*; import org.springframework.stereotype.Service; import org.springframework.transaction.annotation.Transactional; import java.time.LocalDateTime; import java.util.*;
+@Service public class TradeService {
+ private final UserRepository users;private final StockRepository stocks;private final HoldingRepository holdings;private final TradeRepository trades;
+ public TradeService(UserRepository u,StockRepository s,HoldingRepository h,TradeRepository t){users=u;stocks=s;holdings=h;trades=t;}
+ private User user(String email){return users.findByEmail(email).orElseThrow();}
+ @Transactional public Trade execute(String email,TradeRequest req){if(req.quantity()<=0)throw new RuntimeException("Quantity must be positive");User u=user(email);Stock s=stocks.findBySymbol(req.symbol().toUpperCase()).orElseThrow(()->new RuntimeException("Stock not found"));double value=s.getPrice()*req.quantity();Trade.Side side;try{side=Trade.Side.valueOf(req.side().toUpperCase());}catch(Exception e){throw new RuntimeException("Side must be BUY or SELL");}
+  Optional<Holding> oh=holdings.findByUserAndStock(u,s);
+  if(side==Trade.Side.BUY){if(u.getCashBalance()<value)throw new RuntimeException("Insufficient virtual cash");u.setCashBalance(u.getCashBalance()-value);Holding h=oh.orElse(new Holding(u,s,0,0));double totalCost=h.getAverageCost()*h.getQuantity()+value;h.setQuantity(h.getQuantity()+req.quantity());h.setAverageCost(totalCost/h.getQuantity());holdings.save(h);}
+  else {if(oh.isEmpty()||oh.get().getQuantity()<req.quantity())throw new RuntimeException("Insufficient holdings");Holding h=oh.get();h.setQuantity(h.getQuantity()-req.quantity());u.setCashBalance(u.getCashBalance()+value);if(h.getQuantity()==0)holdings.delete(h);else holdings.save(h);}
+  users.save(u);Trade t=new Trade();t.setUser(u);t.setStock(s);t.setSide(side);t.setQuantity(req.quantity());t.setPrice(s.getPrice());t.setTotalValue(value);t.setExecutedAt(LocalDateTime.now());return trades.save(t);
+ }
+ public Map<String,Object> portfolio(String email){User u=user(email);List<Holding> hs=holdings.findByUser(u);double invested=0,value=0;List<Map<String,Object>> items=new ArrayList<>();for(Holding h:hs){double v=h.getQuantity()*h.getStock().getPrice();invested+=h.getQuantity()*h.getAverageCost();value+=v;items.add(Map.of("symbol",h.getStock().getSymbol(),"companyName",h.getStock().getCompanyName(),"quantity",h.getQuantity(),"averageCost",h.getAverageCost(),"price",h.getStock().getPrice(),"value",v,"pnl",v-h.getQuantity()*h.getAverageCost()));}return Map.of("cash",u.getCashBalance(),"invested",invested,"value",value,"total",u.getCashBalance()+value,"pnl",value-invested,"holdings",items,"trades",trades.findTop20ByUserOrderByExecutedAtDesc(u));}
+}

@@ -1,0 +1,2 @@
+package com.portfoliopro.controller; import org.springframework.http.*; import org.springframework.web.bind.annotation.*; import java.util.*;
+@RestControllerAdvice public class ApiExceptionHandler {@ExceptionHandler(RuntimeException.class) ResponseEntity<Map<String,String>> handle(RuntimeException e){return ResponseEntity.badRequest().body(Map.of("message",e.getMessage()==null?"Request failed":e.getMessage()));}}

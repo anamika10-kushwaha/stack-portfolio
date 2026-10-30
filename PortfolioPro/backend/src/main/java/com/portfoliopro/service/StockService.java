@@ -1,0 +1,3 @@
+package com.portfoliopro.service;
+import com.portfoliopro.model.Stock; import com.portfoliopro.repository.StockRepository; import org.springframework.stereotype.Service; import java.util.*;
+@Service public class StockService {private final StockRepository repo; public StockService(StockRepository r){repo=r;} public List<Stock> search(String q){if(q==null||q.isBlank())return repo.findAll();return repo.findTop20BySymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCase(q,q);} public Stock get(String symbol){return repo.findBySymbol(symbol.toUpperCase()).orElseThrow(()->new RuntimeException("Stock not found"));}}
